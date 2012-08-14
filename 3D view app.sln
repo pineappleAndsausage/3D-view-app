@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3D view app", "3D view app\3D view app.vcxproj", "{855C99E1-F0B8-4457-AA48-5A98EAE418B9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{855C99E1-F0B8-4457-AA48-5A98EAE418B9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{855C99E1-F0B8-4457-AA48-5A98EAE418B9}.Debug|Win32.Build.0 = Debug|Win32
+		{855C99E1-F0B8-4457-AA48-5A98EAE418B9}.Release|Win32.ActiveCfg = Release|Win32
+		{855C99E1-F0B8-4457-AA48-5A98EAE418B9}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
