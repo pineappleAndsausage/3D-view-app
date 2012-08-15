@@ -133,12 +133,27 @@ bool Frame::DrawGLScene( GLvoid )
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glLoadIdentity();	
-
+	glTranslatef(0,0,100.0f);
 
 	// draw polygon
+	float ambient[4] = { 0.25f, 0.25f, 0.25f, 1.0f };
+	float diffuse[4] = { 0.4f, 0.4f, 0.4f, 1.0f };
+	float specular[4] ={ 0.774597f, 0.774597f, 0.774597f, 1.0f };
+	float shininess = 76.8f;
 
-
+	//glDisable(GL_COLOR_MATERIAL);	
+	glEnable(GL_COLOR_MATERIAL);	
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+	glColor3d(238.0/255.0, 230.0/255.0, 196.0/255.0);
+	glPushMatrix();
+	m_stl.render_mesh_flat();
+	//m_stl.render_point();
+	glPopMatrix();	
 	//
 	SwapBuffers(m_hDC);	
+
 	return TRUE;
 }

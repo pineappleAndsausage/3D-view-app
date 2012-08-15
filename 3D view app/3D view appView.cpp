@@ -25,6 +25,7 @@ BEGIN_MESSAGE_MAP(CMy3DviewappView, CView)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
+	ON_COMMAND(ID_FILE_OPEN, &CMy3DviewappView::OnFileOpen)
 END_MESSAGE_MAP()
 
 // CMy3DviewappView 생성/소멸
@@ -112,4 +113,21 @@ void CMy3DviewappView::OnSize(UINT nType, int cx, int cy)
 
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 	frame.ReSizeGLScene(cx,cy);
+}
+
+
+void CMy3DviewappView::OnFileOpen()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CString filename;
+	LPCTSTR strFilter = { L"|All Files (*.*)|*.*||" };
+	CFileDialog FileDlg(TRUE, L".*", NULL, 0, strFilter);
+	if( FileDlg.DoModal() == IDOK )
+	{		
+		filename = FileDlg.GetPathName();
+		CT2CA pszConvertedAnsiString(filename);
+		std::string f(pszConvertedAnsiString);
+		frame.m_stl.open(f);
+	}
+	
 }

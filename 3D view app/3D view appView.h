@@ -44,6 +44,7 @@ public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnFileOpen();
 };
 
 #ifndef _DEBUG  // 3D view appView.cpp의 디버그 버전
