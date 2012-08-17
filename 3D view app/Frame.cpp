@@ -2,7 +2,7 @@
 #include "Frame.h"
 
 
-Frame::Frame(void) : m_fov(45.0f)
+Frame::Frame(void) : m_fov(45.0f), m_shading(0)
 {
 }
 
@@ -161,11 +161,20 @@ bool Frame::DrawGLScene( GLvoid )
 	glColor3d(238.0/255.0, 230.0/255.0, 196.0/255.0);
 	glPushMatrix();
 	glScalef(0.01f,0.01f,0.01f);
-	m_stl.render_mesh_flat();	
+	if(m_shading == 0)
+		m_stl.render_mesh_flat();	
+	else
+		m_stl.render_mesh_gouraud();	
 	glPopMatrix();	
 	
 	SwapBuffers(m_hDC);	
 
 	return TRUE;
+}
+
+Frame* Frame::GetInstance()
+{
+	static Frame k;
+	return &k;
 }
 

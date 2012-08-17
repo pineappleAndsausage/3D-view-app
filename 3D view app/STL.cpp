@@ -57,6 +57,7 @@ void STL::open( const std::string &file )
 		short attr;
 		memcpy(&attr,st,2);				
 	}	
+	fin.close();
 
 	//Kdtree 이용해서 face-vertex mesh구조로 바꿈
 	Kdtree tree(m_mesh.vertices);
@@ -90,7 +91,29 @@ void STL::open( const std::string &file )
 	{
 		m_mesh.vertices[i] -= avg;
 	}
-	fin.close();
+	
+
+
+	std::vector<std::vector<int>> v_to_faces(m_mesh.vertices.size());
+	for(int i = 0; i < m_mesh.faces.size(); i++)
+	{
+		for(int j = 0; j < m_mesh.faces[i].size(); j++)
+		{
+			v_to_faces[m_mesh.faces[i][j]].push_back(i);
+		}
+	}
+	//calculating normals of vertices
+	m_mesh.v_normals.clear();
+	m_mesh.v_normals.resize(m_mesh.vertices.size());
+	for(int i = 0; i < m_mesh.vertices.size(); i++)
+	{
+		Vector3F normal(0,0,0);
+		for(int j = 0; j < v_to_faces[i].size(); j++)
+		{
+			normal += m_mesh.f_normals[v_to_faces[i][j]];
+		}		
+		m_mesh.v_normals[i] = normal.normalize();
+	}
 
 }
 

@@ -17,6 +17,8 @@ protected:
 	bool m_mbclk;
 	CPoint m_lastpt;
 
+	int m_shading;
+
 // 특성입니다.
 public:
 	CMy3DviewappDoc* GetDocument() const;

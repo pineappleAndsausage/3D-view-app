@@ -34,6 +34,9 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
+public:
+	afx_msg void OnShadingGouraud();
+	afx_msg void OnShadingFlat();
 };
 
 
