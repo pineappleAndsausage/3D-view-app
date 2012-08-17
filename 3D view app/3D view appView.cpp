@@ -26,6 +26,11 @@ BEGIN_MESSAGE_MAP(CMy3DviewappView, CView)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_COMMAND(ID_FILE_OPEN, &CMy3DviewappView::OnFileOpen)
+	ON_WM_RBUTTONDOWN()
+	ON_WM_MOUSEMOVE()
+	ON_WM_MOUSEWHEEL()
+	ON_WM_RBUTTONUP()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // CMy3DviewappView 생성/소멸
@@ -58,7 +63,7 @@ void CMy3DviewappView::OnDraw(CDC* /*pDC*/)
 		return;
 
 	// TODO: 여기에 원시 데이터에 대한 그리기 코드를 추가합니다.
-	frame.DrawGLScene();
+	//frame.DrawGLScene();
 }
 
 
@@ -92,9 +97,14 @@ int CMy3DviewappView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
+	m_rbclk = false;
+
+
 	CRect rect;
 	GetWindowRect(&rect);
 	frame.Init(GetDC()->m_hDC,rect.right-rect.left,rect.bottom - rect.top);
+
+	SetTimer(0,8,NULL);
 	return 0;
 }
 
@@ -130,4 +140,78 @@ void CMy3DviewappView::OnFileOpen()
 		frame.m_stl.open(f);
 	}
 	
+}
+
+
+void CMy3DviewappView::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	m_rbclk = true;
+	CView::OnRButtonDown(nFlags, point);
+}
+
+
+void CMy3DviewappView::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	double M_PI = 3.14159265358979323846264338327950288;
+	RECT rect;	
+	GetWindowRect(&rect);		
+
+	int dx = point.x - m_lastpt.x;
+	int dy = point.y - m_lastpt.y;
+	
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	//if(point.x < rect.right)
+	
+
+	if(point.x + rect.left < rect.right)
+	{
+		CPoint mid;
+		mid.x = (rect.right - rect.left)/2;		
+		mid.y = (rect.bottom - rect.top)/2;
+		if( m_rbclk ) {
+			frame.m_camera.rotate(m_lastpt.x - mid.x,m_lastpt.y - mid.y,point.x - mid.x,point.y - mid.y);
+			/*frame.m_camera.rotateY -= dx / 180.0 * M_PI;
+			frame.m_camera.rotateX -= dy / 180.0 * M_PI;*/
+
+		}
+		/*else if( m_mbclk ) 
+		{		
+		CFrame::GetInstance()->m_Camera.centerX -= cos(CFrame::GetInstance()->m_Camera.rotateY) * double(dx) / 32.0;
+		CFrame::GetInstance()->m_Camera.centerZ -= -sin(CFrame::GetInstance()->m_Camera.rotateY) * double(dx) / 32.0;
+
+		CFrame::GetInstance()->m_Camera.centerX -= sin(CFrame::GetInstance()->m_Camera.rotateY) * double(dy) / 32.0;
+		CFrame::GetInstance()->m_Camera.centerZ -= cos(CFrame::GetInstance()->m_Camera.rotateY) * double(dy) / 32.0;
+
+		}*/
+	}
+	m_lastpt.x = point.x;
+	m_lastpt.y = point.y;
+	CView::OnMouseMove(nFlags, point);
+}
+
+
+BOOL CMy3DviewappView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	//frame.m_fov += zDelta / 100.0f;	
+	frame.set_fov(zDelta / 100.0f);
+	return CView::OnMouseWheel(nFlags, zDelta, pt);
+}
+
+
+void CMy3DviewappView::OnRButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	m_rbclk = false;
+	CView::OnRButtonUp(nFlags, point);
+}
+
+
+void CMy3DviewappView::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	frame.DrawGLScene();
+	CView::OnTimer(nIDEvent);
 }

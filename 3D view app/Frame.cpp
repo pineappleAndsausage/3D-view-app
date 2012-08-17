@@ -2,7 +2,7 @@
 #include "Frame.h"
 
 
-Frame::Frame(void)
+Frame::Frame(void) : m_fov(45.0f)
 {
 }
 
@@ -74,6 +74,8 @@ bool Frame::Init( HDC hDC, int width, int height )
 
 GLvoid Frame::ReSizeGLScene( GLsizei width, GLsizei height )
 {
+	m_height = height;
+	m_width = width;
 	if(height == 0)
 	{
 		height=1;
@@ -81,11 +83,20 @@ GLvoid Frame::ReSizeGLScene( GLsizei width, GLsizei height )
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();	
-	gluPerspective(45.0f, (GLfloat)width/(GLfloat)height, 0.1f, 100.0f);	
+	gluPerspective(m_fov, (GLfloat)width/(GLfloat)height, 0.1f, 100.0f);	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
-
+GLvoid Frame::set_fov(float f)
+{
+	m_fov += f;
+	
+	glViewport(0, 0, m_width, m_height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();	
+	gluPerspective(m_fov, (GLfloat)m_width/(GLfloat)m_height, 0.1f, 100.0f);	
+	glMatrixMode(GL_MODELVIEW);
+}
 bool Frame::InitGLColor( GLvoid )
 {
 	GLfloat light_ambient[] =  {0.01, 0.01, 0.01, 1.0};
@@ -133,15 +144,15 @@ bool Frame::DrawGLScene( GLvoid )
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glLoadIdentity();	
-	glTranslatef(0,0,100.0f);
-
+	glTranslatef(0,0,-10.0f);
+	m_camera.transform();
+	
 	// draw polygon
+	glEnable(GL_LIGHTING);
 	float ambient[4] = { 0.25f, 0.25f, 0.25f, 1.0f };
 	float diffuse[4] = { 0.4f, 0.4f, 0.4f, 1.0f };
 	float specular[4] ={ 0.774597f, 0.774597f, 0.774597f, 1.0f };
-	float shininess = 76.8f;
-
-	//glDisable(GL_COLOR_MATERIAL);	
+	float shininess = 76.8f;	
 	glEnable(GL_COLOR_MATERIAL);	
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
@@ -149,11 +160,34 @@ bool Frame::DrawGLScene( GLvoid )
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 	glColor3d(238.0/255.0, 230.0/255.0, 196.0/255.0);
 	glPushMatrix();
-	m_stl.render_mesh_flat();
-	//m_stl.render_point();
+	glScalef(0.01f,0.01f,0.01f);
+	m_stl.render_mesh_flat();	
 	glPopMatrix();	
+	
+	//glColor3d(1,1,1);
+	/*glBegin(GL_TRIANGLES);	
+	glVertex3f(1,0,0);
+	glVertex3f(0,1,0);
+	glVertex3f(-1,0,0);
+	glEnd();	
+	glBegin(GL_TRIANGLES);	
+	glVertex3f(1,0,0);
+	glVertex3f(0,1,0);
+	glVertex3f(0,0,-1);
+	glEnd();	
+	glBegin(GL_TRIANGLES);	
+	glVertex3f(-1,0,0);
+	glVertex3f(0,1,0);
+	glVertex3f(0,0,-1);
+	glEnd();	
+	glBegin(GL_TRIANGLES);	
+	glVertex3f(1,0,0);
+	glVertex3f(0,0,-1);
+	glVertex3f(-1,0,0);
+	glEnd();	*/
 	//
 	SwapBuffers(m_hDC);	
 
 	return TRUE;
 }
+

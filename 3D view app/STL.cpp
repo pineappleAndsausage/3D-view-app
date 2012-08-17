@@ -24,6 +24,8 @@ void STL::open( const std::string &file )
 	m_mesh.f_normals.resize(indexCount);
 	m_mesh.vertices.clear();
 	m_mesh.vertices.resize(0);
+
+	Vector3F avg(0,0,0);
 	for(int i = 0; i < indexCount; i++)
 	{	
 		char st[12];
@@ -52,15 +54,19 @@ void STL::open( const std::string &file )
 			{
 				m_mesh.vertices.push_back(v);
 				idx = m_mesh.vertices.size() - 1;
+				avg += v;
 			}
 			m_mesh.faces[i].push_back(idx);
 		}
 		fin.read(st,2);
 		short attr;
-		memcpy(&attr,st,2);		
-
-		
+		memcpy(&attr,st,2);				
 	}	
+	avg/=m_mesh.vertices.size();
+	for(int i = 0; i < static_cast<int>(m_mesh.vertices.size()); i++)
+	{
+		m_mesh.vertices[i] -= avg;
+	}
 	fin.close();
 
 }

@@ -103,6 +103,7 @@
     <ClInclude Include="3D view app.h" />
     <ClInclude Include="3D view appDoc.h" />
     <ClInclude Include="3D view appView.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Frame.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Resource.h" />
@@ -115,6 +116,7 @@
     <ClCompile Include="3D view app.cpp" />
     <ClCompile Include="3D view appDoc.cpp" />
     <ClCompile Include="3D view appView.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="stdafx.cpp">
