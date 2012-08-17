@@ -29,9 +29,6 @@ class STL
 protected:
 	Mesh m_mesh;
 
-protected:
-	int vertex_chk(Vector3F &v);	//v가 m_mesh의 vertex에 존재하는지 체크
-
 public:
 	STL(void);
 	~STL(void);

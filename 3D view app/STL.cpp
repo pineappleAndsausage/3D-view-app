@@ -2,6 +2,7 @@
 #include "STL.h"
 #include <fstream>
 #include "gl/glut.h"
+#include "Kdtree.h"
 STL::STL(void)
 {
 }
@@ -25,7 +26,7 @@ void STL::open( const std::string &file )
 	m_mesh.vertices.clear();
 	m_mesh.vertices.resize(0);
 
-	Vector3F avg(0,0,0);
+	
 	for(int i = 0; i < indexCount; i++)
 	{	
 		char st[12];
@@ -48,20 +49,42 @@ void STL::open( const std::string &file )
 			{	
 				v[j] = t[j];
 			}
-			//int idx = vertex_chk(v);
-			int idx = -1;
-			if(idx == -1)	// 없는 vertex
-			{
-				m_mesh.vertices.push_back(v);
-				idx = m_mesh.vertices.size() - 1;
-				avg += v;
-			}
-			m_mesh.faces[i].push_back(idx);
+			
+			m_mesh.vertices.push_back(v);					
+			m_mesh.faces[i].push_back(m_mesh.vertices.size() - 1);
 		}
 		fin.read(st,2);
 		short attr;
 		memcpy(&attr,st,2);				
 	}	
+
+	//Kdtree 이용해서 face-vertex mesh구조로 바꿈
+	Kdtree tree(m_mesh.vertices);
+	std::map<int,int> idx_map;
+	std::vector<Vector3F> new_vertices;
+	for(int i = 0; i < static_cast<int>(m_mesh.faces.size()); i++)
+	{
+		for(int j = 0; j < static_cast<int>(m_mesh.faces[i].size()); j++)
+		{
+			int n_idx = tree.nearest_idx(m_mesh.vertices[m_mesh.faces[i][j]]);
+			if(idx_map.find(n_idx) == idx_map.end())
+			{
+				new_vertices.push_back(m_mesh.vertices[m_mesh.faces[i][j]]);
+				idx_map[n_idx] = new_vertices.size() - 1;
+				m_mesh.faces[i][j] = new_vertices.size() - 1;
+			}
+			else			
+				m_mesh.faces[i][j] = idx_map[n_idx];
+		}
+	}
+	m_mesh.vertices = new_vertices;
+
+	//중심 이동
+	Vector3F avg(0,0,0);
+	for(int i = 0; i < static_cast<int>(m_mesh.vertices.size()); i++)
+	{
+		avg += m_mesh.vertices[i];
+	}
 	avg/=m_mesh.vertices.size();
 	for(int i = 0; i < static_cast<int>(m_mesh.vertices.size()); i++)
 	{
@@ -69,16 +92,6 @@ void STL::open( const std::string &file )
 	}
 	fin.close();
 
-}
-
-int STL::vertex_chk( Vector3F &v )
-{
-	for(int i = 0; i < static_cast<int>(m_mesh.vertices.size()); i++)
-	{
-		if(m_mesh.vertices[i] == v)
-			return i;
-	}
-	return -1;
 }
 
 void STL::render_mesh_gouraud()
