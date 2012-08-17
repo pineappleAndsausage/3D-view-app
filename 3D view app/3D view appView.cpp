@@ -31,6 +31,8 @@ BEGIN_MESSAGE_MAP(CMy3DviewappView, CView)
 	ON_WM_MOUSEWHEEL()
 	ON_WM_RBUTTONUP()
 	ON_WM_TIMER()
+	ON_WM_MBUTTONDOWN()
+	ON_WM_MBUTTONUP()
 END_MESSAGE_MAP()
 
 // CMy3DviewappView 생성/소멸
@@ -98,7 +100,7 @@ int CMy3DviewappView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
 	m_rbclk = false;
-
+	m_mbclk = false;
 
 	CRect rect;
 	GetWindowRect(&rect);
@@ -159,13 +161,13 @@ void CMy3DviewappView::OnMouseMove(UINT nFlags, CPoint point)
 	GetWindowRect(&rect);		
 
 	int dx = point.x - m_lastpt.x;
-	int dy = point.y - m_lastpt.y;
+	int dy = m_lastpt.y - point.y;
 	
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	//if(point.x < rect.right)
 	
 
-	if(point.x + rect.left < rect.right)
+	//if(point.x + rect.left < rect.right)
 	{
 		CPoint mid;
 		mid.x = (rect.right - rect.left)/2;		
@@ -176,15 +178,10 @@ void CMy3DviewappView::OnMouseMove(UINT nFlags, CPoint point)
 			frame.m_camera.rotateX -= dy / 180.0 * M_PI;*/
 
 		}
-		/*else if( m_mbclk ) 
+		else if( m_mbclk ) 
 		{		
-		CFrame::GetInstance()->m_Camera.centerX -= cos(CFrame::GetInstance()->m_Camera.rotateY) * double(dx) / 32.0;
-		CFrame::GetInstance()->m_Camera.centerZ -= -sin(CFrame::GetInstance()->m_Camera.rotateY) * double(dx) / 32.0;
-
-		CFrame::GetInstance()->m_Camera.centerX -= sin(CFrame::GetInstance()->m_Camera.rotateY) * double(dy) / 32.0;
-		CFrame::GetInstance()->m_Camera.centerZ -= cos(CFrame::GetInstance()->m_Camera.rotateY) * double(dy) / 32.0;
-
-		}*/
+			frame.m_camera.panning(dx,dy);		
+		}
 	}
 	m_lastpt.x = point.x;
 	m_lastpt.y = point.y;
@@ -214,4 +211,20 @@ void CMy3DviewappView::OnTimer(UINT_PTR nIDEvent)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	frame.DrawGLScene();
 	CView::OnTimer(nIDEvent);
+}
+
+
+void CMy3DviewappView::OnMButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	m_mbclk = true;
+	CView::OnMButtonDown(nFlags, point);
+}
+
+
+void CMy3DviewappView::OnMButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	m_mbclk = false;
+	CView::OnMButtonUp(nFlags, point);
 }

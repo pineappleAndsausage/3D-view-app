@@ -164,28 +164,6 @@ bool Frame::DrawGLScene( GLvoid )
 	m_stl.render_mesh_flat();	
 	glPopMatrix();	
 	
-	//glColor3d(1,1,1);
-	/*glBegin(GL_TRIANGLES);	
-	glVertex3f(1,0,0);
-	glVertex3f(0,1,0);
-	glVertex3f(-1,0,0);
-	glEnd();	
-	glBegin(GL_TRIANGLES);	
-	glVertex3f(1,0,0);
-	glVertex3f(0,1,0);
-	glVertex3f(0,0,-1);
-	glEnd();	
-	glBegin(GL_TRIANGLES);	
-	glVertex3f(-1,0,0);
-	glVertex3f(0,1,0);
-	glVertex3f(0,0,-1);
-	glEnd();	
-	glBegin(GL_TRIANGLES);	
-	glVertex3f(1,0,0);
-	glVertex3f(0,0,-1);
-	glVertex3f(-1,0,0);
-	glEnd();	*/
-	//
 	SwapBuffers(m_hDC);	
 
 	return TRUE;
