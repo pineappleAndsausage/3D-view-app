@@ -72,7 +72,7 @@ public:
 	{
 		return sqrtf(*this * *this);
 	}
-	inline float magnitude() 
+	inline float magnitude() const
 	{
 		return *this * *this;
 	}

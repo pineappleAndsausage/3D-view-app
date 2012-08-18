@@ -147,6 +147,8 @@ bool Frame::DrawGLScene( GLvoid )
 	glTranslatef(0,0,-10.0f);
 	m_camera.transform();
 	
+	
+	m_stl.render_highlight_point();
 	// draw polygon
 	glEnable(GL_LIGHTING);
 	float ambient[4] = { 0.25f, 0.25f, 0.25f, 1.0f };
@@ -160,11 +162,16 @@ bool Frame::DrawGLScene( GLvoid )
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 	glColor3d(238.0/255.0, 230.0/255.0, 196.0/255.0);
 	glPushMatrix();
-	glScalef(0.01f,0.01f,0.01f);
+	
 	if(m_shading == 0)
 		m_stl.render_mesh_flat();	
 	else
 		m_stl.render_mesh_gouraud();	
+
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_LIGHTING);
+	m_stl.render_highlight_point();
+
 	glPopMatrix();	
 	
 	SwapBuffers(m_hDC);	
@@ -176,5 +183,75 @@ Frame* Frame::GetInstance()
 {
 	static Frame k;
 	return &k;
+}
+
+
+void Frame::select(int mouse_x, int mouse_y)
+{
+	
+	GLuint	buffer[512];
+	GLint	hits;
+	GLint   viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glSelectBuffer(512, buffer);
+
+	mouse_y = (viewport[3]-mouse_y);
+	glRenderMode(GL_SELECT);
+	glInitNames();
+	glPushName(0); 
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluPickMatrix((GLdouble) mouse_x, (GLdouble) mouse_y, 1.0f, 1.0f, viewport);
+
+	gluPerspective(m_fov, (GLfloat) (viewport[2]-viewport[0])/(GLfloat) (viewport[3]-viewport[1]), 0.1f, 100.0f);
+	glMatrixMode(GL_MODELVIEW);
+	DrawGLScene();
+	glMatrixMode(GL_PROJECTION);   
+	glPopMatrix(); 
+	glMatrixMode(GL_MODELVIEW);
+	hits=glRenderMode(GL_RENDER);
+
+	if (hits > 0) 
+	{
+		int choose = buffer[3];
+		int depth = buffer[1];
+		for (int loop = 1; loop < hits; loop++)         
+		{			
+			if (buffer[loop*4+1] < GLuint(depth))
+			{
+				choose = buffer[loop*4+3];        
+				depth = buffer[loop*4+1];         
+			}       
+		}
+
+		// ray 구해서 가장 가까운점 찾음.
+		GLdouble modelViewMatrix[16];
+		GLdouble projectionMatrix[16];
+		int viewport[4];
+
+		glGetDoublev(GL_MODELVIEW_MATRIX, modelViewMatrix);
+		glGetDoublev(GL_PROJECTION_MATRIX, projectionMatrix);
+		glGetIntegerv(GL_VIEWPORT, viewport);
+
+		GLdouble nearPlaneLocation[3];
+		gluUnProject(mouse_x, mouse_y, 0.0, modelViewMatrix, projectionMatrix,
+			viewport, &nearPlaneLocation[0], &nearPlaneLocation[1], 
+			&nearPlaneLocation[2]);
+
+		GLdouble farPlaneLocation[3];
+		gluUnProject(mouse_x, mouse_y, 1.0, modelViewMatrix, projectionMatrix,
+			viewport, &farPlaneLocation[0], &farPlaneLocation[1],
+			&farPlaneLocation[2]);
+
+		Vector3F ray;
+		Vector3F pos;
+		for(int i = 0; i < 3; i++)
+		{
+			ray[i] = farPlaneLocation[i] - nearPlaneLocation[i];
+			pos[i] = nearPlaneLocation[i];
+		}		
+		m_stl.pick_vertex(choose,pos,ray);
+	}
 }
 

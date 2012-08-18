@@ -57,6 +57,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // 3D view appView.cpp의 디버그 버전

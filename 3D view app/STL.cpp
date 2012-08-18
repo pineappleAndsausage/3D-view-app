@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "STL.h"
 #include <fstream>
+#include <set>
 #include "gl/glut.h"
 #include "Kdtree.h"
 STL::STL(void)
@@ -12,7 +13,7 @@ STL::~STL(void)
 {
 }
 
-void STL::open( const std::string &file )
+void STL::open( const std::string &file, float scale)
 {
 	std::ifstream fin(file.c_str(),std::ios::binary);	
 	char s[80];
@@ -97,12 +98,13 @@ void STL::open( const std::string &file )
 	std::vector<std::vector<int>> v_to_faces(m_mesh.vertices.size());
 	for(int i = 0; i < m_mesh.faces.size(); i++)
 	{
-		for(int j = 0; j < m_mesh.faces[i].size(); j++)
+		for(int j = 0; j < static_cast<int>(m_mesh.faces[i].size()); j++)
 		{
 			v_to_faces[m_mesh.faces[i][j]].push_back(i);
 		}
 	}
-	//calculating normals of vertices
+
+	//vertex의 normal 계산
 	m_mesh.v_normals.clear();
 	m_mesh.v_normals.resize(m_mesh.vertices.size());
 	for(int i = 0; i < m_mesh.vertices.size(); i++)
@@ -115,45 +117,124 @@ void STL::open( const std::string &file )
 		m_mesh.v_normals[i] = normal.normalize();
 	}
 
+	//인접 vertex 구함
+	m_mesh.v_adj.clear();
+	m_mesh.v_adj.resize(m_mesh.vertices.size());
+	for(int i = 0; i < static_cast<int>(v_to_faces.size()); i++)
+	{	
+		std::set<int> vset;
+		for(int j = 0; j < static_cast<int>(v_to_faces[i].size()); j++)
+		{
+			for(int k = 0; k < 3; k++)
+			{
+				if( i != m_mesh.faces[v_to_faces[i][j]][k])
+				{
+					vset.insert(m_mesh.faces[v_to_faces[i][j]][k]);
+				}
+					
+			}
+		}
+		for( auto it = vset.begin(); it != vset.end(); it++)
+			m_mesh.v_adj[i].push_back(*it);
+	}
+
+	//scale
+	for(int i = 0; i < static_cast<int>(m_mesh.vertices.size()); i++)
+	{		
+		m_mesh.vertices[i] *= scale;
+	}
+
 }
 
 void STL::render_mesh_gouraud()
 {
-	glBegin(GL_TRIANGLES);
+	
 	for(int i = 0; i < m_mesh.faces.size(); i++)
 	{	
+		glLoadName(i);
+		glColor3d(238.0/255.0, 230.0/255.0, 196.0/255.0);
+		glBegin(GL_TRIANGLES);
 		for(int j = 0; j < 3; j++)
 		{			
 			glNormal3fv(m_mesh.v_normals[m_mesh.faces[i][j]].data());
 			glVertex3fv(m_mesh.vertices[m_mesh.faces[i][j]].data());
 		}
+		glEnd();	
 	}
-	glEnd();	
+	
 	glPopMatrix();	
 }
 
 void STL::render_mesh_flat()
 {
-	glBegin(GL_TRIANGLES);
+	
 	for(int i = 0; i < m_mesh.faces.size(); i++)
 	{	
+		glLoadName(i);
+		glColor3d(238.0/255.0, 230.0/255.0, 196.0/255.0);
+		glBegin(GL_TRIANGLES);
 		glNormal3fv(m_mesh.f_normals[i].data());
 		for(int j = 0; j < 3; j++)
 		{			
 			glVertex3fv(m_mesh.vertices[m_mesh.faces[i][j]].data());
 		}
+		glEnd();	
 	}
-	glEnd();	
+	
 	
 }
 
-void STL::render_point()
-{
-	glBegin(GL_POINTS);
-	for(int i = 0; i < m_mesh.faces.size(); i++)
+void STL::render_highlight_point()
+{	
+	for(int i = 0; i < static_cast<int>(m_mesh.highlighted_vertex.size()); i++)
 	{			
-		glVertex3fv(m_mesh.vertices[i].data());		
+		glPointSize(3.0);	
+		glColor3f(1.0f,0,0);
+		glBegin(GL_POINTS);
+		glVertex3fv(m_mesh.vertices[m_mesh.highlighted_vertex[i]].data());		
+		glEnd();	
 	}
-	glEnd();	
+}
+void STL::render_point()
+{	
+	
+	for(int i = 0; i < m_mesh.vertices.size(); i++)
+	{			
+		if(m_mesh.picked_point == i)
+		{
+			glPointSize(3.0);		
+			glBegin(GL_POINTS);
+			glColor3f(1,0,0);
+			glVertex3fv(m_mesh.vertices[i].data());		
+			glEnd();	
+		}
+	}
+}
 
+void STL::pick_vertex( int idx, const Vector3F &pos, const Vector3F &ray)
+{
+	float min_dist;
+	int min_idx;
+	for(int i = 0; i < static_cast<int>(m_mesh.faces[idx].size()); i++)	
+	{
+		Vector3F x = m_mesh.vertices[m_mesh.faces[idx][i]];			
+		Vector3F d = pos - x + ray * (((x - pos) * ray)/ ray.magnitude()) ;
+		float dist = d.magnitude_squared();
+		if( i == 0 || min_dist > dist)
+		{
+			min_idx = i;
+			min_dist = dist;
+		}		
+	}
+	
+	m_mesh.picked_point = m_mesh.faces[idx][min_idx];		
+	m_mesh.highlighted_vertex = m_mesh.v_adj[m_mesh.picked_point];
+}
+
+void STL::unpick_vertex()
+{
+	m_mesh.picked_point = -1;
+
+	m_mesh.highlighted_vertex.clear();
+	m_mesh.highlighted_vertex.resize(0);
 }

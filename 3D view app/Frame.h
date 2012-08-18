@@ -18,10 +18,12 @@ public:
 	HDC m_hDC;
 	HGLRC m_hRC;
 	int m_shading;
+	Vector3F click_point;
 	bool Init(HDC hDC, int width, int height);
 	bool InitGLColor(GLvoid);	
 	GLvoid ReSizeGLScene(GLsizei width, GLsizei height);
 	bool DrawGLScene(GLvoid);
 	GLvoid set_fov(float f);
+	void select(int mouse_x, int mouse_y);
 };
 

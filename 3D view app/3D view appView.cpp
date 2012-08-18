@@ -35,6 +35,7 @@ BEGIN_MESSAGE_MAP(CMy3DviewappView, CView)
 	ON_WM_MBUTTONUP()
 	
 	
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 // CMy3DviewappView 생성/소멸
@@ -142,7 +143,7 @@ void CMy3DviewappView::OnFileOpen()
 		filename = FileDlg.GetPathName();
 		CT2CA pszConvertedAnsiString(filename);
 		std::string f(pszConvertedAnsiString);
-		Frame::GetInstance()->m_stl.open(f);
+		Frame::GetInstance()->m_stl.open(f,0.01f);
 	}
 	
 }
@@ -224,4 +225,16 @@ void CMy3DviewappView::OnMButtonUp(UINT nFlags, CPoint point)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	m_mbclk = false;
 	CView::OnMButtonUp(nFlags, point);
+}
+
+
+void CMy3DviewappView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	RECT rect;	
+	GetWindowRect(&rect);	
+	CPoint pos;
+	::GetCursorPos(&pos);
+	Frame::GetInstance()->select(pos.x - rect.left,pos.y - rect.top);
+	CView::OnLButtonDown(nFlags, point);
 }
