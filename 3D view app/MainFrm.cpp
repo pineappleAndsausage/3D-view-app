@@ -19,6 +19,7 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_SHADING_GOURAUD, &CMainFrame::OnShadingGouraud)
 	ON_COMMAND(ID_SHADING_FLAT, &CMainFrame::OnShadingFlat)
+	ON_COMMAND(ID_SMOOTHING_ITERATIVESMOOTHING, &CMainFrame::OnSmoothingIterativesmoothing)
 END_MESSAGE_MAP()
 
 // CMainFrame 생성/소멸
@@ -63,7 +64,7 @@ void CMainFrame::Dump(CDumpContext& dc) const
 void CMainFrame::OnShadingGouraud()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	Frame::GetInstance()->m_shading = 1;
+	Frame::GetInstance()->m_shading = true;
 	CMenu *menu = GetMenu();
 	menu->CheckMenuItem(ID_SHADING_GOURAUD,MF_CHECKED);
 	menu->CheckMenuItem(ID_SHADING_FLAT,MF_UNCHECKED);
@@ -73,8 +74,15 @@ void CMainFrame::OnShadingGouraud()
 void CMainFrame::OnShadingFlat()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	Frame::GetInstance()->m_shading = 0;
+	Frame::GetInstance()->m_shading = false;
 	CMenu *menu = GetMenu();	
 	menu->CheckMenuItem(ID_SHADING_FLAT,MF_CHECKED);
 	menu->CheckMenuItem(ID_SHADING_GOURAUD,MF_UNCHECKED);
+}
+
+
+void CMainFrame::OnSmoothingIterativesmoothing()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	Frame::GetInstance()->m_mesh.smoothing();
 }

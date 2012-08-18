@@ -143,7 +143,7 @@ void CMy3DviewappView::OnFileOpen()
 		filename = FileDlg.GetPathName();
 		CT2CA pszConvertedAnsiString(filename);
 		std::string f(pszConvertedAnsiString);
-		Frame::GetInstance()->m_stl.open(f,0.01f);
+		Frame::GetInstance()->m_mesh.open_stl(f,0.01f);
 	}
 	
 }

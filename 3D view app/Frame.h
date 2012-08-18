@@ -1,6 +1,6 @@
 #pragma once
 #include "GL/glut.h"
-#include "STL.h"
+#include "Mesh.h"
 #include "Camera.h"
 class Frame
 {
@@ -14,10 +14,10 @@ public:
 	int m_width, m_height;
 	Camera m_camera;
 	float m_fov;
-	STL m_stl;
+	Mesh m_mesh;
 	HDC m_hDC;
 	HGLRC m_hRC;
-	int m_shading;
+	bool m_shading;
 	Vector3F click_point;
 	bool Init(HDC hDC, int width, int height);
 	bool InitGLColor(GLvoid);	

@@ -37,6 +37,7 @@ protected:
 public:
 	afx_msg void OnShadingGouraud();
 	afx_msg void OnShadingFlat();
+	afx_msg void OnSmoothingIterativesmoothing();
 };
 
 

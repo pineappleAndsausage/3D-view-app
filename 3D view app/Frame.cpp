@@ -2,7 +2,7 @@
 #include "Frame.h"
 
 
-Frame::Frame(void) : m_fov(45.0f), m_shading(0)
+Frame::Frame(void) : m_fov(45.0f), m_shading(false)
 {
 }
 
@@ -96,6 +96,7 @@ GLvoid Frame::set_fov(float f)
 	glLoadIdentity();	
 	gluPerspective(m_fov, (GLfloat)m_width/(GLfloat)m_height, 0.1f, 100.0f);	
 	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 bool Frame::InitGLColor( GLvoid )
 {
@@ -148,7 +149,7 @@ bool Frame::DrawGLScene( GLvoid )
 	m_camera.transform();
 	
 	
-	m_stl.render_highlight_point();
+	
 	// draw polygon
 	glEnable(GL_LIGHTING);
 	float ambient[4] = { 0.25f, 0.25f, 0.25f, 1.0f };
@@ -163,14 +164,11 @@ bool Frame::DrawGLScene( GLvoid )
 	glColor3d(238.0/255.0, 230.0/255.0, 196.0/255.0);
 	glPushMatrix();
 	
-	if(m_shading == 0)
-		m_stl.render_mesh_flat();	
-	else
-		m_stl.render_mesh_gouraud();	
-
+	m_mesh.render_mesh(m_shading);
+	
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
-	m_stl.render_highlight_point();
+	m_mesh.render_highlight_point();
 
 	glPopMatrix();	
 	
@@ -251,7 +249,7 @@ void Frame::select(int mouse_x, int mouse_y)
 			ray[i] = farPlaneLocation[i] - nearPlaneLocation[i];
 			pos[i] = nearPlaneLocation[i];
 		}		
-		m_stl.pick_vertex(choose,pos,ray);
+		m_mesh.select_vertex(choose,pos,ray);
 	}
 }
 

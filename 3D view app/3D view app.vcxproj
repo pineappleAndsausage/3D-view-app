@@ -104,12 +104,13 @@
     <ClInclude Include="3D view appDoc.h" />
     <ClInclude Include="3D view appView.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Face_Vertex_Mesh.h" />
     <ClInclude Include="Frame.h" />
     <ClInclude Include="Kdtree.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="STL.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Vector3F.h" />
   </ItemGroup>
@@ -118,6 +119,7 @@
     <ClCompile Include="3D view appDoc.cpp" />
     <ClCompile Include="3D view appView.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Face_Vertex_Mesh.cpp" />
     <ClCompile Include="Frame.cpp" />
     <ClCompile Include="Kdtree.cpp" />
     <ClCompile Include="MainFrm.cpp" />
@@ -125,7 +127,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="STL.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Vector3F.cpp" />
   </ItemGroup>
   <ItemGroup>
